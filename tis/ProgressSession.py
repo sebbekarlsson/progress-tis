@@ -1,11 +1,13 @@
 import requests
 import xml.etree.ElementTree as ET
 import re
+from lxml import html
 
 
 class ProgressSession(object):
 
     def __init__(self):
+        self.base_url = 'https://progress.thorengruppen.se/'
         self.s = requests.Session()
         self.COMMANDS =\
         [
@@ -14,11 +16,12 @@ class ProgressSession(object):
 
     def courses(self):
         r = self.s.get(
-            "https://progress.thorengruppen.se/",
+            self.base_url + self.courses_url,
             allow_redirects=True
         )
-        school_names = re.findall(r.text, r'(schools/?/)')
-        print(school_names)
+
+        print(r.text.encode('utf-8'))
+        
 
     def login(self):
         self.username = input('Username: ')
@@ -60,8 +63,14 @@ class ProgressSession(object):
             },
             allow_redirects=True
         )
+        
+        root_3 = html.fromstring(request_3.text)
 
         self.authed = ('Kurser' in request_3.text)
+
+        if self.authed:
+            self.school_name = re.search(r'schools/(.*)/', request_3.text).group(1).split('/')[0]
+            self.courses_url = e = root_3.xpath('.//a[text()="Kurser"]')[0].get('href')
 
         return self.authed
 
