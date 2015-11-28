@@ -77,7 +77,7 @@ class ProgressSession(object):
     def handle_commands(self):
         cmd = ''
         while cmd != 'exit':
-            cdm = input('>')
+            cdm = input('> ')
             
             if cdm in self.COMMANDS:
                 result = getattr(self, cdm)()
