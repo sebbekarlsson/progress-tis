@@ -29,7 +29,6 @@ class ProgressSession(object):
 
 
     def courses(self):
-
         print(self.figlet.renderText('Courses'))
 
         r = self.s.get(
@@ -43,7 +42,6 @@ class ProgressSession(object):
 
 
     def sendmsg(self, reciever, subject, body, times=1):
-
         print(self.figlet.renderText('Messages'))
 
         fails = 0
@@ -62,7 +60,6 @@ class ProgressSession(object):
    
 
     def assignments(self):
-
         print(self.figlet.renderText('Assignments'))
 
         r = self.s.get(
