@@ -4,6 +4,7 @@ import re
 from lxml import html
 import getpass
 from .urls import urls
+from pyfiglet import Figlet
 
 
 class ProgressSession(object):
@@ -16,8 +17,12 @@ class ProgressSession(object):
             'courses',
             'assignments'
         ]
+        self.figlet = Figlet(font='slant')
 
     def courses(self):
+
+        print(self.figlet.renderText('Courses'))
+
         r = self.s.get(
             self.base_url + self.courses_url,
             allow_redirects=True
@@ -29,13 +34,22 @@ class ProgressSession(object):
     
     
     def assignments(self):
+
+        print(self.figlet.renderText('Assignments'))
+
         r = self.s.get(
             self.base_url + self.assignments_url,
             allow_redirects=True
         )
         root = html.fromstring(r.text)
         assignments = root.xpath(".//div[@class='well'][1]/table/tr")
-        information = root.xpath(".//div[@class='panel panel-default'][1]//div[@class='row']//div[@class='col-md-10']")
+        information = root.xpath(
+            """
+            .//div[@class='panel panel-default'][1]
+            //div[@class='row']
+            //div[@class='col-md-10']
+            """
+        )
         
         for info in information:
             title = info.find(".//label/b").text.rstrip()
