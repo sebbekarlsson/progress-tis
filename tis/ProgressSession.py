@@ -5,6 +5,9 @@ from lxml import html
 import getpass
 from .urls import urls
 from pyfiglet import Figlet
+import time
+import sys
+from .Messager import Messager
 
 
 class ProgressSession(object):
@@ -15,9 +18,11 @@ class ProgressSession(object):
         self.COMMANDS =\
         [
             'courses',
-            'assignments'
+            'assignments',
+            'sendmsg'
         ]
         self.figlet = Figlet(font='slant')
+
 
     def courses(self):
 
@@ -31,7 +36,29 @@ class ProgressSession(object):
         courses = root.xpath(".//div[@class='well'][1]/table/tr/td[3]")
         for course in courses:
             print(course.text)
-    
+
+
+    def sendmsg(self, args):
+
+        print(self.figlet.renderText('Messages'))
+
+        for i in range(0, int(args[3])):
+            #r = self.s.post(
+            #    self.base_url + '/tis/schools/{}/Message/Send'\
+            #            .format(self.school_name),
+            #    data={
+            #        'Recipients[0].Id': args[0],
+            #        'Recipients[0].ActorType': 'User',
+            #        'Recipients[0].Name': 'undefined',
+            #        'SendMail': 'false',
+            #        'Subject': args[1],
+            #        'Body': args[2]
+            #    },
+            #    allow_redirects=True
+            #)
+            #print(r.text.encode('utf-8'))
+            messager = Messager(base_url=self.base_url, school_name=self.school_name, session=self.s, reciever=args[0], subject=args[1], body=args[2])
+            messager.start()
     
     def assignments(self):
 
@@ -116,6 +143,9 @@ class ProgressSession(object):
             self.assignments_url = root_3\
                     .xpath('.//a[text()="Inlämningsuppgifter"]')[0]\
                     .get('href')
+            self.messages_url = root_3\
+                    .xpath('.//a[text()="Meddelanden"]')[0]\
+                    .get('href')
 
         return self.authed
 
@@ -130,7 +160,7 @@ class ProgressSession(object):
 
             if cmd in self.COMMANDS:
                 if len(args) > 0:
-                    result = getattr(self, cmd)(**args)
+                    result = getattr(self, cmd)(args)
                 else:
                     result = getattr(self, cmd)()
             else:
