@@ -1,13 +1,15 @@
 import requests
 import xml.etree.ElementTree as ET
 import re
-from lxml import html
+from lxml import html as _html
 import getpass
 from .urls import urls
+from .config import config
 from pyfiglet import Figlet
 import time
 import sys
 from .Messager import Messager
+import html.parser
 
 
 class ProgressSession(object):
@@ -22,7 +24,7 @@ class ProgressSession(object):
             'sendmsg'
         ]
         self.figlet = Figlet(font='slant')
-
+        self.htmlParser = html.parser.HTMLParser()
 
     def courses(self):
 
@@ -32,7 +34,7 @@ class ProgressSession(object):
             self.base_url + self.courses_url,
             allow_redirects=True
         )
-        root = html.fromstring(r.text)
+        root = _html.fromstring(r.text)
         courses = root.xpath(".//div[@class='well'][1]/table/tr/td[3]")
         for course in courses:
             print(course.text)
@@ -44,21 +46,13 @@ class ProgressSession(object):
 
         fails = 0
         for i in range(0, int(args[3])):
-            #r = self.s.post(
-            #    self.base_url + '/tis/schools/{}/Message/Send'\
-            #            .format(self.school_name),
-            #    data={
-            #        'Recipients[0].Id': args[0],
-            #        'Recipients[0].ActorType': 'User',
-            #        'Recipients[0].Name': 'undefined',
-            #        'SendMail': 'false',
-            #        'Subject': args[1],
-            #        'Body': args[2]
-            #    },
-            #    allow_redirects=True
-            #)
-            #print(r.text.encode('utf-8'))
-            messager = Messager(base_url=self.base_url, school_name=self.school_name, session=self.s, reciever=args[0], subject=args[1], body=args[2])
+            messager = Messager(
+                base_url=self.base_url,
+                school_name=self.school_name,
+                session=self.s, reciever=args[0],
+                subject=args[1],
+                body=args[2]
+            )
             try:
                 messager.start()
             except RuntimeError:
@@ -72,7 +66,7 @@ class ProgressSession(object):
             self.base_url + self.assignments_url,
             allow_redirects=True
         )
-        root = html.fromstring(r.text)
+        root = _html.fromstring(r.text)
         assignments = root.xpath(".//div[@class='well'][1]/table/tr")
         information = root.xpath(
             """
@@ -88,18 +82,18 @@ class ProgressSession(object):
                     .rstrip('\r\n')\
                     .replace(' ', '')
 
-            print('{}: {}'.format(title, data))
+            print('{}: {}'.format(title, data).encode('latin-1'))
 
         for assignment in assignments:
             title = assignment.find('.//td[1]/a').text
             status = assignment.find('.//td[5]').text
             
-            print('{}: {}'.format(title, status))
+            print('{}: {}'.format(title, status).encode('latin-1'))
 
 
     def login(self):
-        self.username = input('Username: ')
-        self.password = getpass.getpass('Password: ')
+        self.username = config['login']['username']
+        self.password = config['login']['password']
 
         request_1 = self.s.get(
             urls['login']['login']
@@ -136,7 +130,7 @@ class ProgressSession(object):
                 'submit': 'submit'
             }
         )
-        root_3 = html.fromstring(request_3.text)
+        root_3 = _html.fromstring(request_3.text)
         self.authed = ('Kurser' in request_3.text)
 
         if self.authed:
@@ -145,7 +139,7 @@ class ProgressSession(object):
             self.courses_url = root_3.xpath('.//a[text()="Kurser"]')[0]\
                     .get('href')
             self.assignments_url = root_3\
-                    .xpath('.//a[text()="Inlämningsuppgifter"]')[0]\
+                    .xpath(self.htmlParser.unescape('.//a[text()="Inl&auml;mningsuppgifter"]'))[0]\
                     .get('href')
             self.messages_url = root_3\
                     .xpath('.//a[text()="Meddelanden"]')[0]\
