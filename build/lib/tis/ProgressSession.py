@@ -36,21 +36,22 @@ class ProgressSession(object):
         )
         root = _html.fromstring(r.text)
         courses = root.xpath(".//div[@class='well'][1]/table/tr/td[3]")
-        
-        return courses
+        for course in courses:
+            print(course.text)
 
-    def sendmsg(self, reciever, subject, body, times=1):
+
+    def sendmsg(self, args):
 
         print(self.figlet.renderText('Messages'))
 
         fails = 0
-        for i in range(0, int(times)):
+        for i in range(0, int(args[3])):
             messager = Messager(
                 base_url=self.base_url,
                 school_name=self.school_name,
-                session=self.s, reciever=reciever,
-                subject=subject,
-                body=body
+                session=self.s, reciever=args[0],
+                subject=args[1],
+                body=args[2]
             )
             try:
                 messager.start()
@@ -74,36 +75,22 @@ class ProgressSession(object):
             //div[@class='col-md-10']
             """
         )
-
-        final_infos = []
-        final_assignments = []
-
+        
         for info in information:
             title = info.find(".//label/b").text.rstrip()
             data = info.find(".//div[@class='col-md-4']").text\
                     .rstrip('\r\n')\
                     .replace(' ', '')
-            
-            
-            inf = {}
-            inf['title'] = title
-            inf['text'] = data
-            
-            final_infos.append(inf)
-        
+
+            print('{}: {}'.format(title, data).encode('latin-1'))
+
         for assignment in assignments:
             title = assignment.find('.//td[1]/a').text
             status = assignment.find('.//td[5]').text
             
-            ass = {}
-            ass['title'] = title
-            ass['text'] = status
-            
-            final_assignments.append(ass)
+            print('{}: {}'.format(title, status).encode('latin-1'))
 
-        return {'infos': final_infos, 'assignments': final_assignments}
-        
-           
+
     def login(self):
         self.username = config['login']['username']
         self.password = config['login']['password']
