@@ -13,7 +13,8 @@ class ProgressSession(object):
         self.s = requests.Session()
         self.COMMANDS =\
         [
-            'courses'
+            'courses',
+            'assignments'
         ]
 
     def courses(self):
@@ -25,6 +26,20 @@ class ProgressSession(object):
         courses = root.xpath(".//div[@class='well'][1]/table/tr/td[3]")
         for course in courses:
             print(course.text)
+    
+    
+    def assignments(self):
+        r = self.s.get(
+            self.base_url + self.assignments_url,
+            allow_redirects=True
+        )
+        root = html.fromstring(r.text)
+        assignments = root.xpath(".//div[@class='well'][1]/table/tr")
+        for assignment in assignments:
+            title = assignment.find('.//td[1]/a').text
+            status = assignment.find('.//td[5]').text
+            
+            print('{} -> {}'.format(title, status))
 
 
     def login(self):
@@ -73,6 +88,9 @@ class ProgressSession(object):
             self.school_name = re.search(r'schools/(.*)/', request_3.text)\
                     .group(1).split('/')[0]
             self.courses_url = root_3.xpath('.//a[text()="Kurser"]')[0]\
+                    .get('href')
+            self.assignments_url = root_3\
+                    .xpath('.//a[text()="Inlämningsuppgifter"]')[0]\
                     .get('href')
 
         return self.authed
