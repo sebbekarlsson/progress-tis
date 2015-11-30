@@ -42,6 +42,7 @@ class ProgressSession(object):
 
         print(self.figlet.renderText('Messages'))
 
+        fails = 0
         for i in range(0, int(args[3])):
             #r = self.s.post(
             #    self.base_url + '/tis/schools/{}/Message/Send'\
@@ -58,7 +59,10 @@ class ProgressSession(object):
             #)
             #print(r.text.encode('utf-8'))
             messager = Messager(base_url=self.base_url, school_name=self.school_name, session=self.s, reciever=args[0], subject=args[1], body=args[2])
-            messager.start()
+            try:
+                messager.start()
+            except RuntimeError:
+                print('FAILED TO SEND MESSAGE')
     
     def assignments(self):
 

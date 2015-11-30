@@ -11,17 +11,22 @@ class Messager (threading.Thread):
         self.base_url = base_url
         self.school_name = school_name
     def run(self):
-        r = self.s.post(
-            self.base_url + '/tis/schools/{}/Message/Send'\
-                    .format(self.school_name),
-            data={
-                'Recipients[0].Id': self.reciever,
-                'Recipients[0].ActorType': 'User',
-                'Recipients[0].Name': 'undefined',
-                'SendMail': 'false',
-                'Subject': self.subject,
-                'Body': self.body
-            },
-            allow_redirects=True
-        )
-        print(r.text.encode('utf-8'))
+        try:
+            r = self.s.post(
+                self.base_url + 'tis/schools/{}/Message/Send'\
+                        .format(self.school_name),
+                data={
+                    'Recipients[0].Id': self.reciever,
+                    'Recipients[0].ActorType': 'User',
+                    'Recipients[0].Name': 'undefined',
+                    'SendMail': 'true',
+                    'Important': 'true',
+                    'Subject': self.subject,
+                    'Body': self.body
+                },
+                allow_redirects=True
+            )
+            print(r.text.encode('utf-8'))
+        except:
+            print('COULD NOT SEND MESSAGE')
+        
