@@ -35,11 +35,21 @@ class ProgressSession(object):
         )
         root = html.fromstring(r.text)
         assignments = root.xpath(".//div[@class='well'][1]/table/tr")
+        information = root.xpath(".//div[@class='panel panel-default'][1]//div[@class='row']//div[@class='col-md-10']")
+        
+        for info in information:
+            title = info.find(".//label/b").text.rstrip()
+            data = info.find(".//div[@class='col-md-4']").text\
+                    .rstrip('\r\n')\
+                    .replace(' ', '')
+
+            print('{}: {}'.format(title, data))
+
         for assignment in assignments:
             title = assignment.find('.//td[1]/a').text
             status = assignment.find('.//td[5]').text
             
-            print('{} -> {}'.format(title, status))
+            print('{}: {}'.format(title, status))
 
 
     def login(self):
@@ -96,11 +106,18 @@ class ProgressSession(object):
         return self.authed
 
     def handle_commands(self):
-        cmd = ''
-        while cmd != 'exit':
-            cdm = input('> ')
-            
-            if cdm in self.COMMANDS:
-                result = getattr(self, cdm)()
+        args = ''
+        while args != 'exit':
+            args = input('> ')
+            args = args.split(' ')
+
+            cmd = args[0]
+            args.pop(0)
+
+            if cmd in self.COMMANDS:
+                if len(args) > 0:
+                    result = getattr(self, cmd)(args)
+                else:
+                    result = getattr(self, cmd)()
             else:
                 print('No such command')
