@@ -159,20 +159,3 @@ class ProgressSession(object):
                     .get('href')
 
         return self.authed
-
-    def handle_commands(self):
-        args = ''
-        while args != 'exit':
-            args = input('> ')
-            args = args.split(' ')
-
-            cmd = args[0]
-            args.pop(0)
-
-            if cmd in self.COMMANDS:
-                if len(args) > 0:
-                    result = getattr(self, cmd)(args)
-                else:
-                    result = getattr(self, cmd)()
-            else:
-                print('No such command')
