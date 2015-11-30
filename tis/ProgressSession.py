@@ -116,7 +116,7 @@ class ProgressSession(object):
 
             if cmd in self.COMMANDS:
                 if len(args) > 0:
-                    result = getattr(self, cmd)(args)
+                    result = getattr(self, cmd)(**args)
                 else:
                     result = getattr(self, cmd)()
             else:
