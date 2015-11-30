@@ -21,9 +21,11 @@ class ProgressSession(object):
             self.base_url + self.courses_url,
             allow_redirects=True
         )
+        root = html.fromstring(r.text)
+        courses = root.xpath(".//div[@class='well'][1]/table/tr/td[3]")
+        for course in courses:
+            print(course.text)
 
-        print(r.text.encode('utf-8'))
-        
 
     def login(self):
         self.username = input('Username: ')
@@ -82,6 +84,5 @@ class ProgressSession(object):
             
             if cdm in self.COMMANDS:
                 result = getattr(self, cdm)()
-                print('EXECUTED')
             else:
                 print('No such command')
