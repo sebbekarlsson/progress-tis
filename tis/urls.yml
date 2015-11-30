@@ -1,0 +1,4 @@
+login:
+    login: 'https://progress.thorengruppen.se'
+    authenticate: 'https://login.thorengruppen.se/account/signin?ReturnUrl=%2fissue%2fwsfed%3fwa%3dwsignin1.0%26wtrealm%3dhttps%253a%252f%252fprogress.thorengruppen.se%252f%26wctx%3drm%253d0%2526id%253dpassive%2526ru%253d%25252f%26wct%3d2015-11-26T21%253a08%253a06Z&wa=wsignin1.0&wtrealm=https%3a%2f%2fprogress.thorengruppen.se%2f&wctx=rm%3d0%26id%3dpassive%26ru%3d%252f&wct=2015-11-26T21%3a08%3a06Z'
+    progress: 'https://progress.thorengruppen.se/'
