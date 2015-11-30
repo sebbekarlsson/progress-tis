@@ -14,6 +14,7 @@ import html.parser
 
 class ProgressSession(object):
 
+
     def __init__(self):
         self.base_url = 'https://progress.thorengruppen.se/'
         self.s = requests.Session()
@@ -25,6 +26,7 @@ class ProgressSession(object):
         ]
         self.figlet = Figlet(font='slant')
         self.htmlParser = html.parser.HTMLParser()
+
 
     def courses(self):
 
@@ -38,6 +40,7 @@ class ProgressSession(object):
         courses = root.xpath(".//div[@class='well'][1]/table/tr/td[3]")
         
         return courses
+
 
     def sendmsg(self, reciever, subject, body, times=1):
 
@@ -56,7 +59,8 @@ class ProgressSession(object):
                 messager.start()
             except RuntimeError:
                 print('FAILED TO SEND MESSAGE')
-    
+   
+
     def assignments(self):
 
         print(self.figlet.renderText('Assignments'))
@@ -159,20 +163,3 @@ class ProgressSession(object):
                     .get('href')
 
         return self.authed
-
-    def handle_commands(self):
-        args = ''
-        while args != 'exit':
-            args = input('> ')
-            args = args.split(' ')
-
-            cmd = args[0]
-            args.pop(0)
-
-            if cmd in self.COMMANDS:
-                if len(args) > 0:
-                    result = getattr(self, cmd)(args)
-                else:
-                    result = getattr(self, cmd)()
-            else:
-                print('No such command')
