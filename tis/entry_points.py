@@ -45,7 +45,5 @@ def send_msg():
     
     args = parser.parse_args()
     
-    print(args)
-
     psession.login()
     psession.sendmsg(args.r, args.s, args.b, args.t)
