@@ -48,7 +48,10 @@ class ProgressSession(object):
                 'https://progress.thorengruppen.se/tis/schools/{}/Message/{}?page={}&pageSize=1000'.format(self.school_name, mode, page),
                 allow_redirects=True
             )
-            messages = json.loads(r.text)
+            try:
+                messages = json.loads(r.text)
+            except ValueError:
+                pass
 
             if len(messages['items']) == 0:
                 break
