@@ -47,3 +47,12 @@ def send_msg():
     
     psession.login()
     psession.sendmsg(args.r, args.s, args.b, args.t)
+
+
+def user_search():
+    parser.add_argument('-s')
+    args = parser.parse_args()
+    
+    psession.login()
+    
+    print(psession.user_search(args.s))

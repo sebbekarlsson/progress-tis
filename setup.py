@@ -16,7 +16,8 @@ setup(
             "tis-auth = tis.entry_points:login",
             "tis-courses = tis.entry_points:get_courses",
             "tis-assignments = tis.entry_points:get_assignments",
-            "tis-msg = tis.entry_points:send_msg"
+            "tis-msg = tis.entry_points:send_msg",
+            "tis-search = tis.entry_points:user_search"
         ]
     },
    )
