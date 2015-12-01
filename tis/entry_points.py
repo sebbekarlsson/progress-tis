@@ -49,6 +49,16 @@ def send_msg():
     psession.sendmsg(args.r, args.s, args.b, args.t)
 
 
+def get_messages():
+    parser.add_argument('-d')
+    args = parser.parse_args()
+
+    psession.login()
+    
+    if args.d:
+        psession.delete_all_incoming_messages()
+
+
 def user_search():
     parser.add_argument('-s')
     args = parser.parse_args()

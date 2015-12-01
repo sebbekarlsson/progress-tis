@@ -10,6 +10,7 @@ import time
 import sys
 from .Messager import Messager
 import html.parser
+import json
 
 
 class ProgressSession(object):
@@ -26,6 +27,44 @@ class ProgressSession(object):
         ]
         self.figlet = Figlet(font='slant')
         self.htmlParser = html.parser.HTMLParser()
+
+
+    def get_messages(self):
+        print(self.figlet.renderText('Courses'))
+        
+        page = 1
+        all_messages = []
+        
+        
+        while True:
+            print('Fetching messages, page: {}'.format(page))
+            r = self.s.get(
+                'https://progress.thorengruppen.se/tis/schools/{}/Message/Incoming?page={}&pageSize=1000'.format(self.school_name, page),
+                allow_redirects=True
+            )
+            messages = json.loads(r.text)
+
+            if len(messages['items']) == 0:
+                break
+            
+            for message in messages['items']:
+                all_messages.append(message)
+                
+            page += 1
+
+        return all_messages
+
+
+    def delete_all_incoming_messages(self):
+        messages = self.get_messages()
+
+        for message in messages:
+            id = message['Id']
+            r = self.s.get(
+                'https://progress.thorengruppen.se/tis/schools/{}/Message/RemoveMessage?Id={}'.format(self.school_name, id),
+                allow_redirects=True
+            )
+            print(r.text)
 
 
     def courses(self):
