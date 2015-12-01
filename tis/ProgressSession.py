@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 import re
 from lxml import html as _html
 import getpass
-from .urls import urls
 from .config import config
 from pyfiglet import Figlet
 import time
@@ -158,7 +157,7 @@ class ProgressSession(object):
         self.password = config['login']['password']
 
         request_1 = self.s.get(
-            urls['login']['login']
+            'https://progress.thorengruppen.se'            
         )
         root = ET.fromstring(request_1.text)
         
@@ -167,7 +166,7 @@ class ProgressSession(object):
                 .get('value')
 
         request_2 = self.s.post(
-            urls['login']['authenticate'],
+            'https://login.thorengruppen.se/account/signin?ReturnUrl=%2fissue%2fwsfed%3fwa%3dwsignin1.0%26wtrealm%3dhttps%253a%252f%252fprogress.thorengruppen.se%252f%26wctx%3drm%253d0%2526id%253dpassive%2526ru%253d%25252f%26wct%3d2015-11-26T21%253a08%253a06Z&wa=wsignin1.0&wtrealm=https%3a%2f%2fprogress.thorengruppen.se%2f&wctx=rm%3d0%26id%3dpassive%26ru%3d%252f&wct=2015-11-26T21%3a08%3a06Z',
             data={
                 'UserName': self.username,
                 'Password': self.password,
@@ -184,7 +183,7 @@ class ProgressSession(object):
             return False
 
         request_3 = self.s.post(
-            urls['login']['progress'],
+            'https://progress.thorengruppen.se/',
             data={
                 'wa': 'wsignin1.0',
                 'wresult': self.token_auth,
