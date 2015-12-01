@@ -51,7 +51,7 @@ class ProgressSession(object):
             try:
                 messages = json.loads(r.text)
             except ValueError:
-                pass
+                continue
 
             if len(messages['items']) == 0:
                 break
