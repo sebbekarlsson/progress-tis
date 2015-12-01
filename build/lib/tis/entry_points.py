@@ -50,7 +50,7 @@ def send_msg():
 
 
 def user_search():
-    parser.add_argument('-q')
+    parser.add_argument('-s')
     args = parser.parse_args()
     
     psession.login()
