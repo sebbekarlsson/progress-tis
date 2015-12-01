@@ -28,9 +28,16 @@ class ProgressSession(object):
         self.htmlParser = html.parser.HTMLParser()
 
 
-    def get_messages(self):
-        print(self.figlet.renderText('Courses'))
+    def get_messages(self, mode, delete):
         
+        available_modes = [
+            'outgoing',
+            'incoming'
+        ]
+
+        if mode not in available_modes:
+            return []
+
         page = 1
         all_messages = []
         
@@ -38,7 +45,7 @@ class ProgressSession(object):
         while True:
             print('Fetching messages, page: {}'.format(page))
             r = self.s.get(
-                'https://progress.thorengruppen.se/tis/schools/{}/Message/Incoming?page={}&pageSize=1000'.format(self.school_name, page),
+                'https://progress.thorengruppen.se/tis/schools/{}/Message/{}?page={}&pageSize=1000'.format(self.school_name, mode, page),
                 allow_redirects=True
             )
             messages = json.loads(r.text)
@@ -47,30 +54,37 @@ class ProgressSession(object):
                 break
             
             for message in messages['items']:
-                all_messages.append(message)
+                if delete:
+                    self.delete_message(message['Id'])
+                    print('Deleted message: {}'.format(message['Id']))
+                else:
+                    all_messages.append(message)
                 
             page += 1
 
         return all_messages
 
+    
+    def delete_message(self, id):
+        r = self.s.get(
+            'https://progress.thorengruppen.se/tis/schools/{}/Message/RemoveMessage?Id={}'.format(self.school_name, id),
+            allow_redirects=True
+        )
 
-    def delete_all_incoming_messages(self):
-        messages = self.get_messages()
+        return r.text
+            
 
+    def delete_messages(self, messages):
         for message in messages:
             id = message['Id']
-            r = self.s.get(
-                'https://progress.thorengruppen.se/tis/schools/{}/Message/RemoveMessage?Id={}'.format(self.school_name, id),
-                allow_redirects=True
-            )
-            print(r.text)
+            self.delete_message(id)
 
 
     def courses(self):
         print(self.figlet.renderText('Courses'))
 
         r = self.s.get(
-            self.base_url + self.courses_url,
+            'https://progress.thorengruppen.se/tis/schools/{}/School/Index/?tab=Courses'.format(self.school_name),
             allow_redirects=True
         )
         root = _html.fromstring(r.text)
@@ -110,7 +124,7 @@ class ProgressSession(object):
         print(self.figlet.renderText('Assignments'))
 
         r = self.s.get(
-            self.base_url + self.assignments_url,
+            'https://progress.thorengruppen.se/tis/schools/{}/School/Index/?tab=Assignments'.format(self.school_name),
             allow_redirects=True
         )
         root = _html.fromstring(r.text)
@@ -197,13 +211,5 @@ class ProgressSession(object):
         if self.authed:
             self.school_name = re.search(r'schools/(.*)/', request_3.text)\
                     .group(1).split('/')[0]
-            self.courses_url = root_3.xpath('.//a[text()="Kurser"]')[0]\
-                    .get('href')
-            self.assignments_url = root_3\
-                    .xpath(self.htmlParser.unescape('.//a[text()="Inl&auml;mningsuppgifter"]'))[0]\
-                    .get('href')
-            self.messages_url = root_3\
-                    .xpath('.//a[text()="Meddelanden"]')[0]\
-                    .get('href')
 
         return self.authed

@@ -51,10 +51,13 @@ def send_msg():
 
 def get_messages():
     parser.add_argument('-d')
+    parser.add_argument('-m')
     args = parser.parse_args()
 
     psession.login()
     
+    messages = psession.get_messages(args.m)
+
     if args.d:
         psession.delete_all_incoming_messages()
 

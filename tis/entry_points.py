@@ -51,12 +51,17 @@ def send_msg():
 
 def get_messages():
     parser.add_argument('-d')
+    parser.add_argument('-m')
     args = parser.parse_args()
 
     psession.login()
     
+    delete = False
+
     if args.d:
-        psession.delete_all_incoming_messages()
+        delete = True
+
+    messages = psession.get_messages(args.m, delete)
 
 
 def user_search():
