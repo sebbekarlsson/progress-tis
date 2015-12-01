@@ -29,7 +29,6 @@ class ProgressSession(object):
 
 
     def courses(self):
-
         print(self.figlet.renderText('Courses'))
 
         r = self.s.get(
@@ -40,10 +39,18 @@ class ProgressSession(object):
         courses = root.xpath(".//div[@class='well'][1]/table/tr/td[3]")
         
         return courses
+    
+
+    def user_search(self, query):
+         r = self.s.get(
+            'https://progress.thorengruppen.se/tis/schools/{}/Message/GetMessageActors?search={}'\
+                    .format(self.school_name, query),
+            allow_redirects=True
+         )
+         return r.text
 
 
     def sendmsg(self, reciever, subject, body, times=1):
-
         print(self.figlet.renderText('Messages'))
 
         fails = 0
@@ -62,7 +69,6 @@ class ProgressSession(object):
    
 
     def assignments(self):
-
         print(self.figlet.renderText('Assignments'))
 
         r = self.s.get(
