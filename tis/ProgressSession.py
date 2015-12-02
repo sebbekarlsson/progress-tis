@@ -45,7 +45,7 @@ class ProgressSession(object):
         while True:
             print('Fetching messages, page: {}'.format(page))
             r = self.s.get(
-                'https://progress.thorengruppen.se/tis/schools/{}/Message/{}?page={}&pageSize=100'.format(self.school_name, mode, page),
+                'https://progress.thorengruppen.se/tis/schools/{}/Message/{}?page={}&pageSize=10'.format(self.school_name, mode, page),
                 allow_redirects=True
             )
             try:
