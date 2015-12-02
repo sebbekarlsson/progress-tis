@@ -28,7 +28,7 @@ class ProgressSession(object):
         self.htmlParser = html.parser.HTMLParser()
 
 
-    def get_messages(self, mode, delete):
+    def get_messages(self, mode, pagesize, delete):
         
         available_modes = [
             'outgoing',
@@ -45,7 +45,7 @@ class ProgressSession(object):
         while True:
             print('Fetching messages, page: {}'.format(page))
             r = self.s.get(
-                'https://progress.thorengruppen.se/tis/schools/{}/Message/{}?page={}&pageSize=10'.format(self.school_name, mode, page),
+                'https://progress.thorengruppen.se/tis/schools/{}/Message/{}?page={}&pageSize={}'.format(self.school_name, mode, page, pagesize),
                 allow_redirects=True
             )
             try:

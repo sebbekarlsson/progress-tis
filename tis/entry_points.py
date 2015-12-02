@@ -52,16 +52,22 @@ def send_msg():
 def get_messages():
     parser.add_argument('-d')
     parser.add_argument('-m')
+    parser.add_argument('-l')
+
     args = parser.parse_args()
 
     psession.login()
     
     delete = False
+    pagesize = 10
+
+    if args.l:
+        pagesize = args.l
 
     if args.d:
         delete = True
 
-    messages = psession.get_messages(args.m, delete)
+    messages = psession.get_messages(args.m, pagesize, delete)
 
 
 def user_search():
